@@ -1,8 +1,10 @@
-type Handler<onMessage, onData> = <Message extends onMessage & keyof onData>(data: onData[Message]) => void;
+type Handler<ReceiverMessages, ReceiverMessagesData> = <Message extends ReceiverMessages & keyof ReceiverMessagesData>(
+    data: ReceiverMessagesData[Message]
+) => void;
 
-export class ThreadBridge<Commands, Messages, onCommandData, onMessageData> {
+export class ThreadBridge<SenderCommands, SenderCommandsData, ReceiverMessages, ReceiverMessagesData> {
     private _source: Worker | Window;
-    private _handlers: Map<onCommandData, Handler<onCommandData, onMessageData>>;
+    private _handlers: Map<ReceiverMessages, Handler<ReceiverMessages, ReceiverMessagesData>>;
 
     constructor(worker: Worker | Window) {
         this._source = worker;
@@ -10,18 +12,21 @@ export class ThreadBridge<Commands, Messages, onCommandData, onMessageData> {
         this._source.onmessage = this._onSourceMessage;
     }
 
-    public postMessage<Command extends Commands & keyof Messages>(name: Command, args: Messages[Command]): void {
+    public postMessage<Command extends SenderCommands & keyof SenderCommandsData>(
+        name: Command,
+        args: SenderCommandsData[Command]
+    ): void {
         this._source.postMessage({
             type: name,
             data: args,
         });
     }
 
-    public onMessage<Message extends onCommandData & keyof onMessageData>(
+    public onMessage<Message extends ReceiverMessages & keyof ReceiverMessagesData>(
         name: Message,
-        handler: (data: onMessageData[Message]) => void
+        handler: (data: ReceiverMessagesData[Message]) => void
     ) {
-        this._handlers.set(name, handler as Handler<onCommandData, onMessageData>);
+        this._handlers.set(name, handler as Handler<Message, ReceiverMessagesData>);
     }
 
     public destroy() {
