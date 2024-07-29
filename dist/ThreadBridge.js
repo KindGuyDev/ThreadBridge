@@ -22,7 +22,10 @@ class ThreadBridge {
     onMessage(name, handler) {
         this._handlers.set(name, handler);
     }
-    destroy() {
+    clearHandler(name) {
+        this._handlers.delete(name);
+    }
+    clearAllHandlers() {
         this._handlers.clear();
     }
 }

@@ -1,6 +1,6 @@
 # ThreadBridge
 
-Utility TypeScript library that simplifies bi-directional communication between the main thread and web workers with full type safety. This is a lightweight implementation extending the default API, requiring no additional libraries. Use the same codebase to facilitate seamless and strongly-typed data exchange in both directions.
+A utility TypeScript library that simplifies bi-directional communication between the main thread and web workers with full type safety. This lightweight implementation extends the default API and requires no additional libraries. Use the same codebase to facilitate seamless and strongly-typed data exchange in both directions. Of course, it can be used in one direction if, for some reason, you do not want to use it for bi-directional communication
 
 ## Install
 
@@ -11,6 +11,8 @@ npm install threadbridge
 ```
 
 ## Usage
+
+This API was designed to be used in both the MainThread and WebWorker simultaneously. First, commands and messages are defined, followed by the data associated with them.
 
 ```ts
 // Types.ts
@@ -31,6 +33,8 @@ export interface ReceiverMessagesData {
 }
 ```
 
+Initialize WebWorker and pass it to bridge with types.
+
 ```ts
 // MainThread.ts
 import { ThreadBridge } from "threadbridge";
@@ -45,6 +49,8 @@ bridge.onMessage(ReceiverMessages.Pong, ({ value }) => {
 });
 ```
 
+Then use ThreadBridge in WebWorker to communication with MainThread.
+
 ```ts
 // Worker.ts
 import { ThreadBridge } from "threadbridge";
@@ -56,6 +62,16 @@ bridge.postMessage(ReceiverMessages.Pong, { value: 2 });
 bridge.onMessage(SenderCommands.Ping, ({ value }) => {
     console.log(value);
 });
+```
+
+If u prefer to use named arrow functions you can do it this way:
+
+```ts
+const callback: ThreadBridge.ReceiverHandler<ReceiverMessages.Pong, ReceiverMessagesData> = ({ value }) => {
+    console.log(value);
+};
+
+bridge.onMessage(ReceiverMessages.Pong, callback);
 ```
 
 ## API
@@ -74,7 +90,11 @@ bridge.onMessage(SenderCommands.Ping, ({ value }) => {
 
         -   Registers a handler to process incoming messages.
 
-    -   `destroy(): void`
+    -   `clearHandler(message: ReceiverMessages): void`
+
+        -   Removes handler for the specific message.
+
+    -   `clearAllHandlers(): void`
         -   Removes all handlers.
 
 ## License

@@ -1,10 +1,12 @@
-type Handler<ReceiverMessages, ReceiverMessagesData> = <Message extends ReceiverMessages & keyof ReceiverMessagesData>(
+type ReceiverHandlerType<ReceiverMessages, ReceiverMessagesData> = <
+    Message extends ReceiverMessages & keyof ReceiverMessagesData
+>(
     data: ReceiverMessagesData[Message]
 ) => void;
 
 export class ThreadBridge<SenderCommands, SenderCommandsData, ReceiverMessages, ReceiverMessagesData> {
     private _source: Worker | Window;
-    private _handlers: Map<ReceiverMessages, Handler<ReceiverMessages, ReceiverMessagesData>>;
+    private _handlers: Map<ReceiverMessages, ReceiverHandlerType<ReceiverMessages, ReceiverMessagesData>>;
 
     constructor(worker: Worker | Window) {
         this._source = worker;
@@ -24,12 +26,16 @@ export class ThreadBridge<SenderCommands, SenderCommandsData, ReceiverMessages, 
 
     public onMessage<Message extends ReceiverMessages & keyof ReceiverMessagesData>(
         name: Message,
-        handler: (data: ReceiverMessagesData[Message]) => void
+        handler: ReceiverHandlerType<Message, ReceiverMessagesData>
     ) {
-        this._handlers.set(name, handler as Handler<Message, ReceiverMessagesData>);
+        this._handlers.set(name, handler);
     }
 
-    public destroy() {
+    public clearHandler<Message extends ReceiverMessages & keyof ReceiverMessagesData>(name: Message) {
+        this._handlers.delete(name);
+    }
+
+    public clearAllHandlers() {
         this._handlers.clear();
     }
 
@@ -39,4 +45,11 @@ export class ThreadBridge<SenderCommands, SenderCommandsData, ReceiverMessages, 
         const handler = this._handlers.get(type);
         if (handler) handler(data);
     };
+}
+
+export namespace ThreadBridge {
+    export type ReceiverHandler<ReceiverMessages, ReceiverMessagesData> = ReceiverHandlerType<
+        ReceiverMessages,
+        ReceiverMessagesData
+    >;
 }

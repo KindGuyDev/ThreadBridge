@@ -4,8 +4,8 @@
     "author": "KindGuyDev",
     "license": "MIT",
     "description": "Utility TypeScript library that simplifies bi-directional communication between the main thread and web workers with full type safety. Use the same codebase to facilitate seamless and strongly-typed data exchange in both directions.",
-    "main": "dist/index.js",
-    "types": "dist/index.d.ts",
+    "main": "dist/ThreadBridge.js",
+    "types": "dist/ThreadBridge.d.ts",
     "repository": {
         "type": "git",
         "url": "https://github.com/KindGuyDev/ThreadBridge.git"
@@ -27,7 +27,6 @@
         "prepublishOnly": "npm run build"
     },
     "devDependencies": {
-        "@types/node": "^22.0.0",
         "typescript": "^5.5.4"
     }
 }
