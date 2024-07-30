@@ -1,6 +1,6 @@
 {
     "name": "threadbridge",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "author": "KindGuyDev",
     "license": "MIT",
     "description": "Utility TypeScript library that simplifies bi-directional communication between the main thread and web workers with full type safety. Use the same codebase to facilitate seamless and strongly-typed data exchange in both directions.",
