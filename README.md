@@ -10,6 +10,10 @@ Install the library using npm:
 npm install threadbridge
 ```
 
+## Demo
+
+[codesandbox](https://codesandbox.io/p/devbox/threadbridge-example-637n9h)
+
 ## Usage
 
 This API was designed to be used in both the MainThread and WebWorker simultaneously. First, commands and messages are defined, followed by the data associated with them.
